@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>テキスト送信</title>
+</head>
+<body>
+    <form id="messageForm">
+        <input type="text" name="message" id="messageInput">
+        <input type="submit" value="送信">
+    </form>
+    <p id="receive"></p>
+    <p>メッセージ送信回数: <span id="messageCount">0</span></p>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:3000');
+
+        ws.onmessage = function(event) {
+            console.log(event.data);
+            
+            const data = JSON.parse(event.data);
+            console.log(data);
+            if (data.type === 'message') {
+                let enc = new TextDecoder("utf-8");
+                let mes=enc.decode(new Uint8Array(data.message.data))
+                document.getElementById('receive').innerText = mes;            
+            }
+        
+
+            if (data.type === 'count') {
+                document.getElementById('messageCount').innerText = data.count;
+            }
+        };
+
+        document.getElementById('messageForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // フォームのデフォルトの送信を防ぐ
+
+            const message = document.getElementById('messageInput').value;
+            ws.send(message);
+        });
+    </script>
+</body>
+</html>
