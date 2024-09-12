@@ -1,5 +1,6 @@
 class Player{
   constructor(){
+      this.id=-1;
       this.name="";
       this.LP=8000;     
       this.password="" 
@@ -48,8 +49,11 @@ let messageCount = 0; // メッセージの送信回数をカウント
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const player1 = new Player();
+player1.id=1;
 const player2 = new Player();
+player2.id=2;
 
+console.log(JSON.stringify(player1))
 // ルートにアクセスしたときにclient.htmlを表示
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'client.html'));
@@ -66,7 +70,9 @@ wss.on('connection', (ws) => {
 
   // 新しいクライアントに現在のメッセージ回数を送信
   ws.send(JSON.stringify({ type: 'count', count: messageCount }));
-
+  
+  ws.send(JSON.stringify({type:"player",playerData:player1}));
+  ws.send(JSON.stringify({type:"player",playerData:player2}));
   ws.on('message', (message) => {
     console.log(`Received message: ${message}`);
     
@@ -75,7 +81,9 @@ wss.on('connection', (ws) => {
     
     // メッセージ回数をインクリメント
     messageCount++;
-
+    if(data.type==="calculate"){
+      console.log(data)
+    }
     // すべてのクライアントにメッセージとカウントを送信
     wss.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
@@ -89,4 +97,5 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected');
   });
+
 });

@@ -25,7 +25,7 @@ class Player{
     }
     decrementLP(num){
         this.LP=Math.round(this.LP-num);
-        
+        if(this.LP<0)this.LP=0;
     }
     resetLP(){
         this.LP=8000;

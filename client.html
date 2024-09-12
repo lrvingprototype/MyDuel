@@ -1,59 +1,213 @@
 <!DOCTYPE html>
-<html>
 <head>
-    <title>テキスト送信</title>
+
 </head>
+<style>
+    body{
+        background-color: rgb(45, 47, 48);
+    }
+    .container {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+    }
+    .player1 {
+        background-color: lightblue;
+        width: 48%;display: flex;justify-content: space-between;
+    }
+    .player2 {
+        background-color: lightcoral;
+        width: 48%;display: flex;justify-content: space-between;
+    }
+    .calcurator{
+        width:50%;
+    }
+    .LP{
+        width:50%;
+        background-color: rgba(204, 204, 204, 0.645);
+        color:rgb(0, 0, 0);
+        vertical-align: middle;
+        font-size: 30px;
+    }
+    .LP:first-child{
+        text-align: left;
+    }
+    .LP:last-child{
+        text-align: right;
+    }
+</style>
 <body>
-    <!-- 複数の入力フィールドを作成 -->
-    <input type="text" id="userNameInput" placeholder="ユーザー名">
-    <input type="text" id="messageInput" placeholder="メッセージを入力">
-    <button id="sendButton">送信</button>
+    <div class="container">
+        <div class="player1">
 
-    <p id="receive"></p>
-    <p>メッセージ送信回数: <span id="messageCount">0</span></p>
+<table class="calculator">
 
-    <script>
+    <tr>
+        <td><button onclick="AddNumber_1(7)"> 7 </button></td>
+        <td><button onclick="AddNumber_1(8)"> 8 </button></td>
+        <td><button onclick="AddNumber_1(9)"> 9 </button></td>
+        <td><button onclick="changeOperator_1('+')">+</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="AddNumber_1(4)"> 4 </button></td>
+        <td><button onclick="AddNumber_1(5)"> 5 </button></td>
+        <td><button onclick="AddNumber_1(6)"> 6 </button></td>
+        <td><button onclick="changeOperator_1('-')">-</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="AddNumber_1(1)"> 1 </button></td>
+        <td><button onclick="AddNumber_1(2)"> 2 </button></td>
+        <td><button onclick="AddNumber_1(3)"> 3 </button></td>
+        <td><button onclick="Half_1()">/2</button></td>
+    </tr>
+    <tr>
+        <td><button onclick="AddNumber_1(0)">  0</button></td>
+        <td><button onclick="AddZero_1(2)"> 00</button></td>
+        <td><button onclick="AddZero_1(3)">000</button></td>
+        <td><button onclick="sendData_1()">=</button></td>
+
+    </tr>
+</table>
+    <p class="LP" id="player_1">8000</p>
+        </div>
+        <div class="player2">
+            <p class="LP" id="player_2">7000</p>
+            <table>
+            <tr>
+                <td><button onclick="AddNumber_2(7)"> 7 </button></td>
+                <td><button onclick="AddNumber_2(8)"> 8 </button></td>
+                <td><button onclick="AddNumber_2(9)"> 9 </button></td>
+                <td><button onclick="changeOperator_2('+')">+</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="AddNumber_2(4)"> 4 </button></td>
+                <td><button onclick="AddNumber_2(5)"> 5 </button></td>
+                <td><button onclick="AddNumber_2(6)"> 6 </button></td>
+                <td><button onclick="changeOperator_2('-')">-</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="AddNumber_2(1)"> 1 </button></td>
+                <td><button onclick="AddNumber_2(2)"> 2 </button></td>
+                <td><button onclick="AddNumber_2(3)"> 3 </button></td>
+                <td><button onclick="Half_2()">/2</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="AddNumber_2(0)">  0</button></td>
+                <td><button onclick="AddZero_2(2)"> 00</button></td>
+                <td><button onclick="AddZero_2(3)">000</button></td>
+                <td><button onclick="sendData_2()">=</button></td>
+        
+            </tr>
+        </table>
+        </div>
+    </div>
+
+<button onclick="sendData()"> データ送信 </button>
+    <script type="text/javascript">
+
+        
+        let p1=0;
+        let p2=0;
+        let o1='-'
+        let o2='-'
+        let LP1=8000;
+        let LP2=8000;
+
         const ws = new WebSocket('ws://localhost:3000');
 
         ws.onmessage = function(event) {
             console.log(event.data);
             
             const data = JSON.parse(event.data);
-            if (data.type === 'message') {
 
-                
-                document.getElementById('receive').innerText = `ユーザー: ${data.userName}, メッセージ: ${data.message}`;
-
-
-            }
-
-            if (data.type === 'count') {
-                document.getElementById('messageCount').innerText = data.count;
+            if (data.type === 'player') {
+                console.log(data)
+                if(data.playerData.id===1){
+                    playerData=data.playerData
+                    console.log("player1のデータ")
+                    LP1=playerData.LP;
+                    o1="-"
+                    p1=0;
+                    Update_1()
+                }
+                if(data.playerData.id===2){
+                    playerData=data.playerData
+                    console.log("player2のデータ")
+                    LP2=playerData.LP;
+                    o2="-"
+                    p2=0;
+                    Update_2()
+                }
             }
         };
 
-        // 送信ボタンのクリックイベントをリスン
-        document.getElementById('sendButton').addEventListener('click', function() {
-            const message = document.getElementById('messageInput').value;
-            const userName = document.getElementById('userNameInput').value;
-
-            // 複数データをまとめてオブジェクトとして送信
-            const data = {
-                userName: userName,
-                message: message
-            };
-
-            ws.send(JSON.stringify(data));  // JSON形式で送信
-            document.getElementById('messageInput').value = '';  // 送信後に入力フィールドをクリア
-        });
-
-        // Enterキーを押したときに送信するためのイベントリスナー
-        document.getElementById('messageInput').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Enterキーのデフォルト動作を無効化
-                document.getElementById('sendButton').click(); // ボタンクリックをトリガー
+        function AddNumber_1(num){
+            p1=p1*10+num;
+            Update_1()
+        }
+        function AddZero_1(num){
+            for(i=0;i<num;i++){
+                AddNumber_1(0);
             }
-        });
+            
+        }
+        function AddZero_2(num){
+            for(i=0;i<num;i++){
+                AddNumber_2(0);
+            }
+            
+        }
+        function AddNumber_2(num){
+            p2=p2*10+num;
+            Update_2()
+        }
+        function Half_1(){
+
+            o1='-'
+            p1=Math.floor(LP1/2);
+            Update_1()
+        }
+        function Half_2(){
+            o2='-'
+            p2=Math.floor(LP2/2);
+            Update_2()
+        }
+        function changeOperator_1(ope){
+            o1=ope
+            Update_1()
+        }
+        function changeOperator_2(ope){
+            o2=ope
+            Update_2()
+        }
+        function Update_1(){
+            console.log("update_1")
+            document.getElementById("player_1").innerHTML=LP1
+            if(p1!=0){
+                document.getElementById("player_1").innerHTML+=o1+p1;
+            }
+        }
+        function Update_2(){
+            console.log("update_2")
+            document.getElementById("player_2").innerHTML=LP2
+            if(p2!=0){
+                document.getElementById("player_2").innerHTML+=o2+p2;
+            } 
+        }
+        function sendData() {
+            ws.send(JSON.stringify({type:"calculate",operator:"+"}))
+          }
+          function sendData_1() {
+            ws.send(JSON.stringify({type:"calculate",id:1,operator:o1,LP:p1}))
+          }
+          function sendData_2(){
+            ws.send(JSON.stringify({type:"calculate",id:2,operator:o2,LP:p2}))
+          }
+          function enterEqual_1(){
+            ws.send(JSON.stringify({type:"calculate",id:1,operator:o1,LP:p1}))
+          }
+          function enterEqual_2(){
+            ws.send(JSON.stringify({type:"calculate",id:2,operator:o2,LP:p2}))
+          }
     </script>
 </body>
-</html>
