@@ -113,7 +113,7 @@
         let LP1=8000;
         let LP2=8000;
 
-        const ws = new WebSocket('ws://localhost:3000');
+        const ws = new WebSocket('https://myduel.onrender.com/');
 
         ws.onmessage = function(event) {
             console.log(event.data);
