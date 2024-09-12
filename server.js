@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const WebSocket = require('ws');
-const Player = require('./player');
+const Player = require('player');
 const app = express();
 const port = 3000;
 
