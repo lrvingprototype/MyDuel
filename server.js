@@ -2,12 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const WebSocket = require('ws');
+const Player = require('./player');
 const app = express();
 const port = 3000;
 
 let messageCount = 0; // メッセージの送信回数をカウント
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const player1 = new Player();
+const player2 = new Player();
+
 
 // ルートにアクセスしたときにclient.htmlを表示
 app.get('/', (req, res) => {

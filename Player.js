@@ -2,7 +2,8 @@ class Player{
     constructor(){
         this.name="";
         this.LP=8000;     
-        this.password=""   
+        this.password="" 
+        
     }
     RegistName(name) {
         this.name=name;
@@ -29,4 +30,9 @@ class Player{
     resetLP(){
         this.LP=8000;
     }
+    setPassword(password){
+        this.password=password;
+    }
 }
+
+module.exports=Player
