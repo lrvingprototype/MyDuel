@@ -12,13 +12,7 @@
     <p>メッセージ送信回数: <span id="messageCount">0</span></p>
 
     <script>
-            // 環境変数の値を取得
-        const MYURL = process.env.MYSERVICEURL;
         const ws = new WebSocket('ws://localhost:3000');
-        if(MYURL!=undefined){
-            ws = new WebSocket(MYURL);
-        }
-        
 
         ws.onmessage = function(event) {
             console.log(event.data);
