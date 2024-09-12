@@ -26,7 +26,7 @@ class Player{
   }
   decrementLP(num){
       this.LP=Math.round(this.LP-num);
-      
+      if(this.LP<0)this.LP=0;
   }
   resetLP(){
       this.LP=8000;
@@ -83,15 +83,27 @@ wss.on('connection', (ws) => {
     messageCount++;
     if(data.type==="calculate"){
       console.log(data)
+
+      if(data.id===1){
+        player1.CalculateLP(data.LP,data.operator);
+        wss.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {            
+            client.send(JSON.stringify({ type: 'player', playerData:player1  }));
+          }
+        });
+        
+      }
+      if(data.id===2){
+        player2.CalculateLP(data.LP,data.operator);
+        wss.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {            
+            client.send(JSON.stringify({ type: 'player', playerData:player2  }));
+          }
+        });
+      }
     }
     // すべてのクライアントにメッセージとカウントを送信
-    wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'message', userName: data.userName, message: data.message }));
-        
-        client.send(JSON.stringify({ type: 'count', count: messageCount }));
-      }
-    });
+
   });
 
   ws.on('close', () => {
