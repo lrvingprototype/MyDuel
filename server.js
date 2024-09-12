@@ -50,7 +50,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const player1 = new Player();
 const player2 = new Player();
 
-
 // ルートにアクセスしたときにclient.htmlを表示
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'client.html'));
@@ -70,14 +69,18 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (message) => {
     console.log(`Received message: ${message}`);
-    console.log(`Received message: ${message}`);
+    
+    // JSON形式のメッセージをパース
+    const data = JSON.parse(message);
+    
     // メッセージ回数をインクリメント
     messageCount++;
 
     // すべてのクライアントにメッセージとカウントを送信
     wss.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'message', message:message }));
+        client.send(JSON.stringify({ type: 'message', userName: data.userName, message: data.message }));
+        
         client.send(JSON.stringify({ type: 'count', count: messageCount }));
       }
     });

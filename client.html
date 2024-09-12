@@ -4,24 +4,27 @@
     <title>テキスト送信</title>
 </head>
 <body>
-    <!-- フォームタグは不要なので削除 -->
+    <!-- 複数の入力フィールドを作成 -->
+    <input type="text" id="userNameInput" placeholder="ユーザー名">
     <input type="text" id="messageInput" placeholder="メッセージを入力">
-    <button id="sendButton">送信</button> <!-- 送信用のボタンを作成 -->
+    <button id="sendButton">送信</button>
 
     <p id="receive"></p>
     <p>メッセージ送信回数: <span id="messageCount">0</span></p>
 
     <script>
-        const ws = new WebSocket('https://myduel.onrender.com');
+        const ws = new WebSocket('ws://localhost:3000');
 
         ws.onmessage = function(event) {
             console.log(event.data);
             
             const data = JSON.parse(event.data);
             if (data.type === 'message') {
-                let enc = new TextDecoder("utf-8");
-                let mes = enc.decode(new Uint8Array(data.message.data));
-                document.getElementById('receive').innerText = mes;
+
+                
+                document.getElementById('receive').innerText = `ユーザー: ${data.userName}, メッセージ: ${data.message}`;
+
+
             }
 
             if (data.type === 'count') {
@@ -32,8 +35,16 @@
         // 送信ボタンのクリックイベントをリスン
         document.getElementById('sendButton').addEventListener('click', function() {
             const message = document.getElementById('messageInput').value;
-            ws.send(message);
-            document.getElementById('messageInput').value = ''; // 送信後に入力フィールドをクリア
+            const userName = document.getElementById('userNameInput').value;
+
+            // 複数データをまとめてオブジェクトとして送信
+            const data = {
+                userName: userName,
+                message: message
+            };
+
+            ws.send(JSON.stringify(data));  // JSON形式で送信
+            document.getElementById('messageInput').value = '';  // 送信後に入力フィールドをクリア
         });
 
         // Enterキーを押したときに送信するためのイベントリスナー
