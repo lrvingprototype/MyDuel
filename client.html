@@ -12,8 +12,12 @@
     <p>メッセージ送信回数: <span id="messageCount">0</span></p>
 
     <script>
-        const ws = new WebSocket('https://myduel.onrender.com/');
-
+        const MYURL = process.env.MYSERVICEURL;
+        const ws = new WebSocket('ws://localhost:3000');
+        if(MYURL!=undefined){
+            ws = new WebSocket(MYURL);
+        }
+        
         ws.onmessage = function(event) {
             console.log(event.data);
             
@@ -21,7 +25,7 @@
             console.log(data);
             if (data.type === 'message') {
                 let enc = new TextDecoder("utf-8");
-                
+
                 let mes=enc.decode(new Uint8Array(data.message.data))
                 document.getElementById('receive').innerText = mes;            
             }
