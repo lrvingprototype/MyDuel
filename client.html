@@ -21,6 +21,7 @@
     }
     .calcurator{
         width:50%;
+        background-color: rgba(0, 0, 0, 0.233);
     }
     .LP{
         width:50%;
@@ -67,6 +68,13 @@
                     <td><button onclick="sendData_1()">=</button></td>
 
                 </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    
+                    <td><button onclick="clear_1()">C</button></td>
+                </tr>
             </table>
             <p class="LP" id="player_1">8000</p>
         </div>
@@ -98,15 +106,24 @@
                 <td><button onclick="sendData_2()">=</button></td>
         
             </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                
+                <td><button onclick="clear_2()">C</button></td>
+            </tr>
         </table>
         </div>
     </div>
     <div class="container">
         <div class="player1">
-            <p >未実装</p>
+            
+            <button onclick="Reset_1()">リセット</button>
+            <button onclick="dice_1()" id="dice1_text"></button>
         </div>
         <div class="player2">
-            <p >未実装</p>
+            <button onclick="Reset_2()">リセット</button>
         </div>
     </div>
 
@@ -119,8 +136,8 @@
         let o1='-'
         let o2='-'
 
-        let d1=0;
-        let d2=0;
+        let d1=1;
+        let d2=1;
         let c1=true;
         let c2=true;
 
@@ -141,10 +158,9 @@
                     c1=playerData.coin;
                     d1=playerData.dice;
 
-                    o1="-"
-                    p1=0;
+                    clear_1();
                     
-                    Update_1()
+                   
                 }
                 if(data.playerData.id===2){
                     playerData=data.playerData
@@ -153,9 +169,8 @@
                     c2=playerData.coin;
                     d2=playerData.dice;
                     
-                    o2="-"
-                    p2=0;
-                    Update_2()
+                    clear_2();
+                    
                 }
             }
         };
@@ -208,8 +223,23 @@
             o2=ope
             Update_2()
         }
+        function clear_1(){
+            o1="-"
+            p1=0;
+            Update_1()
+        }
+        function clear_2(){
+            o2="-"
+            p2=0;
+            Update_2()
+        }
+
         function Update_1(){
             console.log("update_1")
+            update_player1_calculator()
+            update_player1_dice()
+        }
+        function update_player1_calculator(){
             document.getElementById("player_1").innerHTML=LP1
             if(p1!=0){
                 document.getElementById("player_1").innerHTML+=o1+p1;
@@ -225,6 +255,35 @@
                 document.getElementById("plus_1").disabled=false;
             }
         }
+        function update_player1_dice(){
+            let text = document.getElementById("dice1_text");
+            switch(d1){
+                case 1:
+                    text.innerHTML = "壱";
+                    break;
+                case 2:
+                    text.innerHTML = "弐";
+                    break;
+                case 3:
+                    text.innerHTML = "参";
+                    break;
+                case 4:
+                    text.innerHTML = "肆";
+                    break;
+                case 5:
+                    text.innerHTML = "伍";
+                    break;
+                case 6:
+                    text.innerHTML = "六";
+                    break;
+                case 0:
+                    text.innerHTML="零";
+                    break;
+                default:
+                    text.innerHTML = "E";
+            }
+        }
+        
         function Update_2(){
             console.log("update_2")
             document.getElementById("player_2").innerHTML=LP2
@@ -258,16 +317,28 @@
             ws.send(JSON.stringify({type:"calculate",id:2,operator:o2,LP:p2}))
           }
           function dice_1(){
-
+            d1=0;
+            update_player1_dice()
+            ws.send(JSON.stringify({type:"dice",id:1}))
           }
           function dice_2(){
-
+            d2=0;
+            update_player2_dice()
+            ws.send(JSON.stringify({type:"dice",id:2}))
           }
           function coin_1(){
 
           }
           function coin_2(){
             
+          }
+          function Reset_1(){
+            clear_1()
+            ws.send(JSON.stringify({type:"reset",id:1}))
+          }
+          function Reset_2(){
+            clear_2()
+            ws.send(JSON.stringify({type:"reset",id:2}))
           }
     </script>
 </body>

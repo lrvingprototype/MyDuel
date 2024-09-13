@@ -100,11 +100,46 @@ wss.on('connection', (ws) => {
       if(data.id===1){
         player=player1
         
-      }
-      if(data.id===2){
+      }else if(data.id===2){
         player=player2
+      }else{
+        player=player_dummy
       }
       player.CalculateLP(data.LP,data.operator);
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {            
+          client.send(JSON.stringify({ type: 'player', playerData:player  }));
+        }
+      });
+    }
+    if(data.type==="reset"){
+      if(data.id===1){
+        player=player1
+        
+      }
+      else if(data.id===2){
+        player=player2
+      }else{
+        player=player_dummy
+      }
+      player.reset()
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {            
+          client.send(JSON.stringify({ type: 'player', playerData:player  }));
+        }
+      });
+    }
+    if(data.type==="dice"){
+      if(data.id===1){
+        player=player1
+        
+      }
+      else if(data.id===2){
+        player=player2
+      }else{
+        player=player_dummy
+      }
+      player.diceroll()
       wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {            
           client.send(JSON.stringify({ type: 'player', playerData:player  }));
