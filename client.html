@@ -120,6 +120,7 @@
         <div class="player1">
             
             <button onclick="Reset_1()">リセット</button>
+            <img onclick="player1_coin_start()" id="player1_coin" src="coin.gif" height="20" loop="false">
             <button onclick="dice_1()" id="dice1_text"></button>
         </div>
         <div class="player2">
@@ -140,9 +141,9 @@
         let d2=1;
         let c1=true;
         let c2=true;
-
-//        const ws= new WebSocket('ws://localhost:3000');
-        const ws = new WebSocket('https://myduel.onrender.com/');
+        
+        const ws= new WebSocket('ws://localhost:3000');
+//        const ws = new WebSocket('https://myduel.onrender.com/');
 
         ws.onmessage = function(event) {
             console.log(event.data);
@@ -170,6 +171,33 @@
                     d2=playerData.dice;
                     
                     clear_2();
+                    
+                }
+
+            }
+            if(data.type==="coin"){
+                console.log(data)
+                if(data.playerData.id===1){
+                    playerData=data.playerData
+                    console.log("player1のデータ")
+                    LP1=playerData.LP;
+                    c1=playerData.coin;
+                    console.log("cointoss_Stop")
+
+                    d1=playerData.dice;
+
+                    update_player1_coin();
+                    
+                   
+                }
+                if(data.playerData.id===2){
+                    playerData=data.playerData
+                    console.log("player2のデータ")
+                    LP2=playerData.LP;
+                    c2=playerData.coin;
+                    d2=playerData.dice;
+                    
+                    update_player2_coin();
                     
                 }
             }
@@ -253,6 +281,24 @@
                 document.getElementById("plus_1").disabled=true;
             }else{
                 document.getElementById("plus_1").disabled=false;
+            }
+        }
+        function player1_coin_start(){
+            document.getElementById("player1_coin").src="coin.gif"
+            c1=undefined
+            console.log("cointoss_Start")
+            ws.send(JSON.stringify({type:"coin",id:1}))
+        }
+        function update_player1_coin(){
+            console.log("coin1"+c1)
+            if(c1===undefined){
+                document.getElementById("player1_coin").src="coin.gif"
+            }
+            if(c1==true){
+                document.getElementById("player1_coin").src="coin_front.gif"
+            }
+            if(!c1){
+                document.getElementById("player1_coin").src="coin_back.gif"
             }
         }
         function update_player1_dice(){

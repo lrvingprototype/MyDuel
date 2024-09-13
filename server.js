@@ -67,11 +67,11 @@ const player2 = new Player();
 player2.id=2;
 const player_dummy=new Player();
 console.log(JSON.stringify(player1))
+app.use(express.static(path.join(__dirname, 'img')));
 // ルートにアクセスしたときにclient.htmlを表示
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'client.html'));
 });
-
 // WebSocketサーバを作成
 const wss = new WebSocket.Server({ server: app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
@@ -146,7 +146,23 @@ wss.on('connection', (ws) => {
         }
       });
     }
-    
+    if(data.type==="coin"){
+      if(data.id===1){
+        player=player1
+        
+      }
+      else if(data.id===2){
+        player=player2
+      }else{
+        player=player_dummy
+      }
+      player.cointoss()
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {            
+          client.send(JSON.stringify({ type: 'coin', playerData:player  }));
+        }
+      });
+    } 
   });
 
   ws.on('close', () => {
