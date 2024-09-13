@@ -120,7 +120,7 @@
         <div class="player1">
             
             <button onclick="Reset_1()">リセット</button>
-            <img onclick="player1_coin_start()" id="player1_coin" src="coin.gif" height="20" loop="false">
+            <img onclick="player1_coin_start()" id="player1_coin" src="coin_front.gif" height="20" loop="false">
             <button onclick="dice_1()" id="dice1_text"></button>
         </div>
         <div class="player2">
@@ -142,7 +142,7 @@
         let c1=true;
         let c2=true;
         
-//        const ws= new WebSocket('ws://localhost:3000');
+////        const ws= new WebSocket('ws://localhost:3000');
         const ws = new WebSocket('https://myduel.onrender.com/');
 
         ws.onmessage = function(event) {
