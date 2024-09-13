@@ -4,7 +4,21 @@ class Player{
       this.name="";
       this.LP=8000;     
       this.password="" 
-      
+      this.coin=true;
+      this.dice=1;
+  }
+  diceroll(){
+    this.dice=Math.floor(Math.random()*6+1)
+  }
+  cointoss(){
+    this.coin=(Math.random()<0.5)
+  }
+  reset(){
+  
+    this.LP=8000;     
+    this.password="" 
+    this.coin=true;
+    this.dice=1;
   }
   RegistName(name) {
       this.name=name;
@@ -28,12 +42,11 @@ class Player{
       this.LP=Math.round(this.LP-num);
       if(this.LP<0)this.LP=0;
   }
-  resetLP(){
-      this.LP=8000;
-  }
+
   setPassword(password){
       this.password=password;
   }
+  
 }
 
 const express = require('express');
@@ -52,7 +65,7 @@ const player1 = new Player();
 player1.id=1;
 const player2 = new Player();
 player2.id=2;
-
+const player_dummy=new Player();
 console.log(JSON.stringify(player1))
 // ルートにアクセスしたときにclient.htmlを表示
 app.get('/', (req, res) => {
@@ -83,27 +96,22 @@ wss.on('connection', (ws) => {
     messageCount++;
     if(data.type==="calculate"){
       console.log(data)
-
+      let player=player_dummy;
       if(data.id===1){
-        player1.CalculateLP(data.LP,data.operator);
-        wss.clients.forEach(client => {
-          if (client.readyState === WebSocket.OPEN) {            
-            client.send(JSON.stringify({ type: 'player', playerData:player1  }));
-          }
-        });
+        player=player1
         
       }
       if(data.id===2){
-        player2.CalculateLP(data.LP,data.operator);
-        wss.clients.forEach(client => {
-          if (client.readyState === WebSocket.OPEN) {            
-            client.send(JSON.stringify({ type: 'player', playerData:player2  }));
-          }
-        });
+        player=player2
       }
+      player.CalculateLP(data.LP,data.operator);
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {            
+          client.send(JSON.stringify({ type: 'player', playerData:player  }));
+        }
+      });
     }
-    // すべてのクライアントにメッセージとカウントを送信
-
+    
   });
 
   ws.on('close', () => {

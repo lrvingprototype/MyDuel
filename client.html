@@ -102,19 +102,23 @@
         </div>
     </div>
 
-<button onclick="sendData()"> データ送信 </button>
+
     <script type="text/javascript">
 
-        
+        let LP1=8000;
+        let LP2=8000;        
         let p1=0;
         let p2=0;
         let o1='-'
         let o2='-'
-        let LP1=8000;
-        let LP2=8000;
 
-//        const ws = new WebSocket('ws://localhost:3000');
-        const ws = new WebSocket('https://myduel.onrender.com/');
+        let d1=0;
+        let d2=0;
+        let c1=true;
+        let c2=true;
+
+        const ws= new WebSocket('ws://localhost:3000');
+//        const ws = new WebSocket('https://myduel.onrender.com/');
 
         ws.onmessage = function(event) {
             console.log(event.data);
@@ -129,6 +133,7 @@
                     LP1=playerData.LP;
                     o1="-"
                     p1=0;
+
                     Update_1()
                 }
                 if(data.playerData.id===2){
@@ -209,6 +214,18 @@
           }
           function enterEqual_2(){
             ws.send(JSON.stringify({type:"calculate",id:2,operator:o2,LP:p2}))
+          }
+          function dice_1(){
+
+          }
+          function dice_2(){
+
+          }
+          function coin_1(){
+
+          }
+          function coin_2(){
+            
           }
     </script>
 </body>
