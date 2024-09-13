@@ -40,35 +40,35 @@
     <div class="container">
         <div class="player1">
 
-<table class="calculator">
+            <table class="calculator">
 
-    <tr>
-        <td><button onclick="AddNumber_1(7)"> 7 </button></td>
-        <td><button onclick="AddNumber_1(8)"> 8 </button></td>
-        <td><button onclick="AddNumber_1(9)"> 9 </button></td>
-        <td><button onclick="changeOperator_1('+')">+</button></td>
-    </tr>
-    <tr>
-        <td><button onclick="AddNumber_1(4)"> 4 </button></td>
-        <td><button onclick="AddNumber_1(5)"> 5 </button></td>
-        <td><button onclick="AddNumber_1(6)"> 6 </button></td>
-        <td><button onclick="changeOperator_1('-')">-</button></td>
-    </tr>
-    <tr>
-        <td><button onclick="AddNumber_1(1)"> 1 </button></td>
-        <td><button onclick="AddNumber_1(2)"> 2 </button></td>
-        <td><button onclick="AddNumber_1(3)"> 3 </button></td>
-        <td><button onclick="Half_1()">/2</button></td>
-    </tr>
-    <tr>
-        <td><button onclick="AddNumber_1(0)">  0</button></td>
-        <td><button onclick="AddZero_1(2)"> 00</button></td>
-        <td><button onclick="AddZero_1(3)">000</button></td>
-        <td><button onclick="sendData_1()">=</button></td>
+                <tr>
+                    <td><button onclick="AddNumber_1(7)"> 7 </button></td>
+                    <td><button onclick="AddNumber_1(8)"> 8 </button></td>
+                    <td><button onclick="AddNumber_1(9)"> 9 </button></td>
+                    <td><button onclick="changeOperator_1('+')"id="plus_1">+</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="AddNumber_1(4)"> 4 </button></td>
+                    <td><button onclick="AddNumber_1(5)"> 5 </button></td>
+                    <td><button onclick="AddNumber_1(6)"> 6 </button></td>
+                    <td><button onclick="changeOperator_1('-')" id="minus_1">-</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="AddNumber_1(1)"> 1 </button></td>
+                    <td><button onclick="AddNumber_1(2)"> 2 </button></td>
+                    <td><button onclick="AddNumber_1(3)"> 3 </button></td>
+                    <td><button onclick="Half_1()">/2</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="AddNumber_1(0)">  0</button></td>
+                    <td><button onclick="AddZero_1(2)"> 00</button></td>
+                    <td><button onclick="AddZero_1(3)">000</button></td>
+                    <td><button onclick="sendData_1()">=</button></td>
 
-    </tr>
-</table>
-    <p class="LP" id="player_1">8000</p>
+                </tr>
+            </table>
+            <p class="LP" id="player_1">8000</p>
         </div>
         <div class="player2">
             <p class="LP" id="player_2">7000</p>
@@ -77,13 +77,13 @@
                 <td><button onclick="AddNumber_2(7)"> 7 </button></td>
                 <td><button onclick="AddNumber_2(8)"> 8 </button></td>
                 <td><button onclick="AddNumber_2(9)"> 9 </button></td>
-                <td><button onclick="changeOperator_2('+')">+</button></td>
+                <td><button onclick="changeOperator_2('+')" id="plus_2">+</button></td>
             </tr>
             <tr>
                 <td><button onclick="AddNumber_2(4)"> 4 </button></td>
                 <td><button onclick="AddNumber_2(5)"> 5 </button></td>
                 <td><button onclick="AddNumber_2(6)"> 6 </button></td>
-                <td><button onclick="changeOperator_2('-')">-</button></td>
+                <td><button onclick="changeOperator_2('-')" id="minus_2">-</button></td>
             </tr>
             <tr>
                 <td><button onclick="AddNumber_2(1)"> 1 </button></td>
@@ -101,7 +101,14 @@
         </table>
         </div>
     </div>
-
+    <div class="container">
+        <div class="player1">
+            <p >未実装</p>
+        </div>
+        <div class="player2">
+            <p >未実装</p>
+        </div>
+    </div>
 
     <script type="text/javascript">
 
@@ -117,8 +124,8 @@
         let c1=true;
         let c2=true;
 
-        const ws= new WebSocket('ws://localhost:3000');
-//        const ws = new WebSocket('https://myduel.onrender.com/');
+//        const ws= new WebSocket('ws://localhost:3000');
+        const ws = new WebSocket('https://myduel.onrender.com/');
 
         ws.onmessage = function(event) {
             console.log(event.data);
@@ -131,15 +138,21 @@
                     playerData=data.playerData
                     console.log("player1のデータ")
                     LP1=playerData.LP;
+                    c1=playerData.coin;
+                    d1=playerData.dice;
+
                     o1="-"
                     p1=0;
-
+                    
                     Update_1()
                 }
                 if(data.playerData.id===2){
                     playerData=data.playerData
                     console.log("player2のデータ")
                     LP2=playerData.LP;
+                    c2=playerData.coin;
+                    d2=playerData.dice;
+                    
                     o2="-"
                     p2=0;
                     Update_2()
@@ -182,6 +195,15 @@
             o1=ope
             Update_1()
         }
+        function changeOperatorMinus_1(ope){
+            o1="-"
+            
+            Update_1()
+        }
+        function changeOperatorPlus_1(){
+            o1="+"
+            Update_1()
+        }
         function changeOperator_2(ope){
             o2=ope
             Update_2()
@@ -192,6 +214,16 @@
             if(p1!=0){
                 document.getElementById("player_1").innerHTML+=o1+p1;
             }
+            if(o1=="-"){
+                document.getElementById("minus_1").disabled=true;
+            }else{
+                document.getElementById("minus_1").disabled=false;
+            }
+            if(o1=="+"){
+                document.getElementById("plus_1").disabled=true;
+            }else{
+                document.getElementById("plus_1").disabled=false;
+            }
         }
         function Update_2(){
             console.log("update_2")
@@ -199,6 +231,16 @@
             if(p2!=0){
                 document.getElementById("player_2").innerHTML+=o2+p2;
             } 
+            if(o2=="-"){
+                document.getElementById("minus_2").disabled=true;
+            }else{
+                document.getElementById("minus_2").disabled=false;
+            }
+            if(o2=="+"){
+                document.getElementById("plus_2").disabled=true;
+            }else{
+                document.getElementById("plus_2").disabled=false;
+            }
         }
         function sendData() {
             ws.send(JSON.stringify({type:"calculate",operator:"+"}))
