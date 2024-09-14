@@ -164,8 +164,9 @@ wss.on('connection', (ws) => {
       });
     }
     if(data.type==="turn"){
+      let turn=Math.floor(Math.random()*2+1)
       wss.clients.forEach(client => {
-          let turn=Math.floor(Math.random()*2+1)
+          
         if (client.readyState === WebSocket.OPEN) {            
           client.send(JSON.stringify({ type: 'turn', data:turn  }));
         }
