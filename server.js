@@ -162,7 +162,15 @@ wss.on('connection', (ws) => {
           client.send(JSON.stringify({ type: 'coin', playerData:player  }));
         }
       });
-    } 
+    }
+    if(data.type==="turn"){
+      wss.clients.forEach(client => {
+          let turn=Math.floor(Math.random()*2+1)
+        if (client.readyState === WebSocket.OPEN) {            
+          client.send(JSON.stringify({ type: 'turn', data:turn  }));
+        }
+      });
+    }
   });
 
   ws.on('close', () => {

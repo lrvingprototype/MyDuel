@@ -78,6 +78,7 @@
             </table>
             <p class="LP" id="player_1">8000</p>
         </div>
+        <img src="dummy_l.png" id="coin_turn" width="20" onclick="decideTurnOrder()">
         <div class="player2">
             <p class="LP" id="player_2">7000</p>
             <table>
@@ -120,15 +121,20 @@
         <div class="player1">
             
             <button onclick="Reset_1()">リセット</button>
-            <img onclick="player1_coin_start()" id="player1_coin" src="coin_front.gif" height="20" loop="false">
+            <img onclick="player1_coin_start()" id="player1_coin" src="dummy_l.png" height="20" loop="false">
             <button onclick="dice_1()" id="dice1_text"></button>
         </div>
-        <div class="player2">
+        
+        <div class="player2">            
+            <button onclick="dice_2()" id="dice2_text"></button>
+            <img onclick="player2_coin_start()" id="player2_coin" src="dummy_k.png" height="20" loop="false">
             <button onclick="Reset_2()">リセット</button>
         </div>
     </div>
 
     <script type="text/javascript">
+
+        let turn=-1;
 
         let LP1=8000;
         let LP2=8000;        
@@ -142,8 +148,8 @@
         let c1=true;
         let c2=true;
         
-////        const ws= new WebSocket('ws://localhost:3000');
-        const ws = new WebSocket('https://myduel.onrender.com/');
+        const ws= new WebSocket('ws://localhost:3000');
+//        const ws = new WebSocket('https://myduel.onrender.com/');
 
         ws.onmessage = function(event) {
             console.log(event.data);
@@ -175,6 +181,11 @@
                 }
 
             }
+            if(data.type==="turn"){
+                console.log(data)
+                turn=data.data;
+                update_turn()
+            }
             if(data.type==="coin"){
                 console.log(data)
                 if(data.playerData.id===1){
@@ -201,6 +212,8 @@
                     
                 }
             }
+
+
         };
 
         function AddNumber_1(num){
@@ -284,21 +297,39 @@
             }
         }
         function player1_coin_start(){
-            document.getElementById("player1_coin").src="coin.gif"
+            document.getElementById("player1_coin").src="coin_l.gif"
             c1=undefined
             console.log("cointoss_Start")
             ws.send(JSON.stringify({type:"coin",id:1}))
         }
+        function player2_coin_start(){
+            document.getElementById("player2_coin").src="coin_l.gif"
+            c1=undefined
+            console.log("cointoss_Start")
+            ws.send(JSON.stringify({type:"coin",id:2}))
+        }
         function update_player1_coin(){
             console.log("coin1"+c1)
             if(c1===undefined){
-                document.getElementById("player1_coin").src="coin.gif"
+                document.getElementById("player1_coin").src="coin_l.gif"
             }
             if(c1==true){
-                document.getElementById("player1_coin").src="coin_front.gif"
+                document.getElementById("player1_coin").src="coin_front_l.gif"
             }
             if(!c1){
-                document.getElementById("player1_coin").src="coin_back.gif"
+                document.getElementById("player1_coin").src="coin_back_l.gif"
+            }
+        }
+        function update_player2_coin(){
+            console.log("coin1"+c2)
+            if(c2===undefined){
+                document.getElementById("player2_coin").src="coin_k.gif"
+            }
+            if(c2==true){
+                document.getElementById("player2_coin").src="coin_front_k.gif"
+            }
+            if(!c2){
+                document.getElementById("player2_coin").src="coin_back_k.gif"
             }
         }
         function update_player1_dice(){
@@ -329,9 +360,35 @@
                     text.innerHTML = "E";
             }
         }
-        
-        function Update_2(){
-            console.log("update_2")
+        function update_player2_dice(){
+            let text = document.getElementById("dice2_text");
+            switch(d2){
+                case 1:
+                    text.innerHTML = "壱";
+                    break;
+                case 2:
+                    text.innerHTML = "弐";
+                    break;
+                case 3:
+                    text.innerHTML = "参";
+                    break;
+                case 4:
+                    text.innerHTML = "肆";
+                    break;
+                case 5:
+                    text.innerHTML = "伍";
+                    break;
+                case 6:
+                    text.innerHTML = "六";
+                    break;
+                case 0:
+                    text.innerHTML="零";
+                    break;
+                default:
+                    text.innerHTML = "E";
+            }
+        }
+        function update_player2_calculator(){
             document.getElementById("player_2").innerHTML=LP2
             if(p2!=0){
                 document.getElementById("player_2").innerHTML+=o2+p2;
@@ -346,6 +403,37 @@
             }else{
                 document.getElementById("plus_2").disabled=false;
             }
+        }
+        function Update_2(){
+            console.log("update_2")
+            update_player2_calculator();
+            update_player2_dice()
+        }
+        function decideTurnOrder(){
+            turn=0;
+            update_turn()
+            ws.send(JSON.stringify({type:"turn"}))
+        }
+        function update_turn(){
+            let coin=document.getElementById("coin_turn");
+            console.log("turn:"+turn)
+            switch(turn){
+                case -1:
+                    coin.src="dummy_k.png"
+                    break;
+                case 0:
+                    coin.src="coin_kl.gif"
+                    break;
+                case 1:
+                    coin.src="coin_kl_l.gif"
+                    break;
+                case 2:
+                    coin.src="coin_kl_k.gif"
+                    break;
+                default:
+                    coin.src="dummy.png"
+            }
+            console.log(coin)
         }
         function sendData() {
             ws.send(JSON.stringify({type:"calculate",operator:"+"}))
