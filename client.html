@@ -7,6 +7,7 @@
         width: 36px;
         height:36px;
         text-align: center;
+        vertical-align: middle; 
     }
     body{
         background-color: rgb(45, 47, 48);
@@ -40,6 +41,9 @@
     }
     .LP:last-child{
         text-align: right;
+    }
+    .logMes{
+        display: none;
     }
 </style>
 <body>
@@ -81,11 +85,11 @@
                     <td><button class="dentaku" onclick="clear_1()">C</button></td>
                 </tr>
             </table>
-            <p class="LP" id="player_1">8000</p>
+            <p class="LP" id="player_1">stand by</p>
         </div>
         <img src="dummy_l.png" id="coin_turn" width="20" onclick="decideTurnOrder()">
         <div class="player2">
-            <p class="LP" id="player_2">7000</p>
+            <p class="LP" id="player_2">stand by</p>
             <table>
             <tr>
                 <td><button class="dentaku" onclick="AddNumber_2(7)"> 7 </button></td>
@@ -136,9 +140,24 @@
             <button onclick="Reset_2()">リセット</button>
         </div>
     </div>
-
+    <button id="log" onclick="changelogState()">log</button>
+    <textarea class="logMes" id="logMes" readonly>Set Up</textarea>
     <script type="text/javascript">
-
+        let logState=document.getElementById("logMes");
+        function changelogState(){
+            if(logState.style.display==="block"){
+                logState.style.display="none";
+            }else{
+                logState.style.display="block"
+            }
+        }
+        function writeLog(string){
+            logState.innerHTML+="\n"
+            logState.innerHTML+=string
+        }
+        function resetLog(){
+            logState.innerHTML="";
+        }
         let turn=-1;
 
         let LP1=8000;
@@ -153,8 +172,8 @@
         let c1=true;
         let c2=true;
         
-//        const ws= new WebSocket('ws://localhost:3000');
-        const ws = new WebSocket('https://myduel.onrender.com/');
+        const ws= new WebSocket('ws://localhost:3000');
+//        const ws = new WebSocket('https://myduel.onrender.com/');
 
         ws.onmessage = function(event) {
             console.log(event.data);
@@ -164,6 +183,7 @@
             if (data.type === 'player') {
                 console.log(data)
                 if(data.playerData.id===1){
+                    let beforeLP=LP1;
                     playerData=data.playerData
                     console.log("player1のデータ")
                     LP1=playerData.LP;
@@ -171,10 +191,11 @@
                     d1=playerData.dice;
 
                     clear_1();
-                    
+                    writeLog("プレイヤー1 LP:"+beforeLP+"->"+LP1)
                    
                 }
                 if(data.playerData.id===2){
+                    let beforeLP=LP2;
                     playerData=data.playerData
                     console.log("player2のデータ")
                     LP2=playerData.LP;
@@ -182,7 +203,8 @@
                     d2=playerData.dice;
                     
                     clear_2();
-                    
+                    writeLog("プレイヤー2 LP:"+beforeLP+"->"+LP2)
+                   
                 }
 
             }
@@ -190,6 +212,7 @@
                 console.log(data)
                 turn=data.data;
                 update_turn()
+                writeLog("先攻後攻コイン:プレイヤー"+turn);
             }
             if(data.type==="coin"){
                 console.log(data)
@@ -204,7 +227,9 @@
 
                     update_player1_coin();
                     
-                   
+                    let coinmes="裏";
+                    if(c1)coinmes="表";
+                    writeLog("プレイヤー1 コイン:"+coinmes);
                 }
                 if(data.playerData.id===2){
                     playerData=data.playerData
@@ -214,10 +239,34 @@
                     d2=playerData.dice;
                     
                     update_player2_coin();
-                    
+                    let coinmes="裏";
+                    if(c2)coinmes="表";
+                    writeLog("プレイヤー2 コイン:"+coinmes);
                 }
             }
+            if(data.type==="dice"){
+                console.log(data)
+                if(data.playerData.id===1){
+                    playerData=data.playerData
+                    console.log("player1のデータ")
 
+                    console.log("cointoss_Stop")
+
+                    d1=playerData.dice;
+
+                    update_player1_dice();
+                    
+                    writeLog("プレイヤー1 ダイス:"+d1);
+                }
+                if(data.playerData.id===2){
+                    playerData=data.playerData
+                    console.log("player2のデータ")
+                    d2=playerData.dice;
+                    
+                    update_player2_dice();
+                    writeLog("プレイヤー2 ダイス:"+d2);
+                }
+            }
 
         };
 
