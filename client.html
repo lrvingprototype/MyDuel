@@ -154,6 +154,7 @@
         function writeLog(string){
             logState.innerHTML+="\n"
             logState.innerHTML+=string
+            logState.scrollTop=logState.scrollHeight;
         }
         function resetLog(){
             logState.innerHTML="";
